@@ -1,0 +1,8 @@
+{
+  "projects": [
+    {"name": "NACRE//OS", "repo": "qt314wink/nacre-os", "type": "asset-pack", "priority": "high"},
+    {"name": "Omni-Loom", "repo": "qt314wink/omni-loom", "type": "case-study-build", "priority": "high"},
+    {"name": "Visual Ontology Compiler", "repo": "qt314wink/visual-ontology-compiler", "type": "research-tool", "priority": "high"},
+    {"name": "ChromaOS", "repo": "qt314wink/chroma-os", "type": "design-system", "priority": "medium"}
+  ]
+}

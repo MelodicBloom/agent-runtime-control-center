@@ -1,0 +1,31 @@
+{
+  "name": "agent-runtime-control-center",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev apps/web",
+    "build": "next build apps/web",
+    "lint": "next lint apps/web",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "latest",
+    "@octokit/rest": "latest",
+    "ai": "latest",
+    "drizzle-orm": "latest",
+    "next": "latest",
+    "postgres": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "drizzle-kit": "latest",
+    "typescript": "latest",
+    "tsx": "latest"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "decisions": [
+    {
+      "id": "dec_001",
+      "decision": "Use Neon Postgres instead of Supabase",
+      "reason": "Preview database branching aligns with Vercel deployment previews.",
+      "alternatives": ["Supabase", "Self-hosted PostgreSQL", "PlanetScale"],
+      "tradeoffs": "Less realtime tooling than Supabase, but better Vercel-native integration.",
+      "confidence": 0.85,
+      "review_date": "2026-10-01",
+      "created_at": "2026-07-02"
+    },
+    {
+      "id": "dec_002",
+      "decision": "Use GitHub App instead of personal access token",
+      "reason": "Scoped permissions, auditable installs, no single-user credential dependency.",
+      "alternatives": ["Personal access token", "Fine-grained PAT"],
+      "tradeoffs": "Higher setup cost but dramatically safer for multi-repo agent access.",
+      "confidence": 0.95,
+      "review_date": "2026-10-01",
+      "created_at": "2026-07-02"
+    }
+  ]
+}

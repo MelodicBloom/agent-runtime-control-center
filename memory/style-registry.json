@@ -1,0 +1,7 @@
+{
+  "output_preferences": {
+    "summary_style": "listenable",
+    "avoid": ["giant unnecessary code blocks", "vague chatbot setup", "premature certainty"],
+    "prefer": ["explicit definitions", "approval gates", "traceable decisions", "small PRs"]
+  }
+}
