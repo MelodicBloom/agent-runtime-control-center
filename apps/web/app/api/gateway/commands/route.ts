@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   chatgptAdapter,
   createTaskRecord,
+  normalizeGatewayRequest,
   perplexityAdapter,
   type CommandSource,
 } from "../../../../../../packages/core/src/control-plane";
@@ -16,6 +17,7 @@ const clients: GatewayClient[] = [
   { source: "perplexity", keyName: "GATEWAY_PERPLEXITY_KEY" },
   { source: "telegram", keyName: "GATEWAY_TELEGRAM_KEY" },
   { source: "dashboard", keyName: "GATEWAY_DASHBOARD_KEY" },
+  { source: "api", keyName: "GATEWAY_API_KEY" },
 ];
 
 function getBearerToken(request: NextRequest): string | null {
@@ -47,14 +49,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized gateway client" }, { status: 401 });
   }
 
-  const body = await request.json();
-  const adapter = adapterFor(client.source);
+  let normalized;
 
+  try {
+    normalized = normalizeGatewayRequest({
+      ...(await request.json()),
+      source: client.source,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Invalid gateway request" },
+      { status: 400 },
+    );
+  }
+
+  const adapter = adapterFor(client.source);
   const result = await adapter.normalize({
-    actor: body.actor ?? "qt314wink",
-    rawInput: body.rawInput,
-    callbackId: body.callbackId ?? `${client.source}:manual`,
-    callbackUrl: body.callbackUrl,
+    actor: normalized.actor,
+    rawInput: normalized.rawInput,
+    callbackId: normalized.callbackId,
+    callbackUrl: normalized.callbackUrl,
   });
 
   const task = createTaskRecord({
@@ -67,7 +81,11 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     accepted: true,
-    source: client.source,
+    gateway: {
+      source: client.source,
+      actor: normalized.actor,
+      clientRequestId: normalized.clientRequestId,
+    },
     task: {
       id: task.id,
       intent: task.envelope.intent,
