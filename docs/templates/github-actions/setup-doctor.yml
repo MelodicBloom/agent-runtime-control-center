@@ -1,0 +1,53 @@
+name: Setup Doctor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 13 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  setup-doctor:
+    name: Validate configuration presence
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Print environment presence report
+        run: |
+          node - <<'NODE'
+          const required = [
+            "DATABASE_URL",
+            "CONTROL_PLANE_API_KEY",
+            "GATEWAY_API_KEY"
+          ];
+          const recommended = [
+            "GATEWAY_CHATGPT_KEY",
+            "GATEWAY_PERPLEXITY_KEY",
+            "GATEWAY_TELEGRAM_KEY",
+            "GATEWAY_DASHBOARD_KEY",
+            "OPENAI_API_KEY",
+            "PERPLEXITY_API_KEY",
+            "GITHUB_APP_ID",
+            "GITHUB_APP_PRIVATE_KEY",
+            "GITHUB_INSTALLATION_ID"
+          ];
+          const missingRequired = required.filter((name) => !process.env[name]);
+          const missingRecommended = recommended.filter((name) => !process.env[name]);
+          console.log("Missing required:", missingRequired.length ? missingRequired.join(", ") : "none");
+          console.log("Missing recommended:", missingRecommended.length ? missingRecommended.join(", ") : "none");
+          if (missingRequired.length) process.exit(1);
+          NODE
