@@ -1,0 +1,41 @@
+name: Database Migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Environment to run migrations against"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    name: Run Drizzle migrations
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate migrations
+        run: npm run db:generate --if-present
+
+      - name: Apply migrations
+        run: npm run db:migrate --if-present
