@@ -1,0 +1,42 @@
+name: Verify strictly read-only repo audit
+
+on:
+  pull_request:
+    paths:
+      - 'packages/core/src/audit/**'
+      - 'packages/core/src/control-plane/registry.ts'
+      - '.github/workflows/read-only-repo-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run read-only audit contract tests
+        run: npx --yes tsx@4.23.0 --test packages/core/src/audit/read-only-repo-audit.test.ts
+
+      - name: Verify workflow token authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const workflow = fs.readFileSync('.github/workflows/read-only-repo-audit.yml', 'utf8');
+          if (!/permissions:\s*\n\s*contents:\s*read/.test(workflow)) {
+            throw new Error('Audit workflow must declare contents: read.');
+          }
+          if (/contents:\s*write|pull-requests:\s*write|actions:\s*write/.test(workflow)) {
+            throw new Error('Audit workflow exposes write authority.');
+          }
+          NODE
