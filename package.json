@@ -6,6 +6,8 @@
     "dev": "next dev apps/web",
     "build": "next build apps/web",
     "lint": "next lint apps/web",
+    "test:audit": "node --import tsx --test tests/audit/*.test.ts",
+    "verify:audit": "npm run test:audit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
