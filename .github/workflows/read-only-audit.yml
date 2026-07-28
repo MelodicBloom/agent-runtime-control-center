@@ -1,0 +1,75 @@
+name: Read-Only Audit Verification
+
+on:
+  pull_request:
+    paths:
+      - packages/core/src/control-plane/policy.ts
+      - packages/core/src/audit/**
+      - tests/audit/**
+      - docs/READ_ONLY_AUDIT_RUNBOOK.md
+      - package.json
+      - package-lock.json
+      - .github/workflows/read-only-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate lockfile candidate when absent
+        run: |
+          if [ ! -f package-lock.json ]; then
+            npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          fi
+          mkdir -p artifacts
+          cp package-lock.json artifacts/package-lock.candidate.json
+          sha256sum package.json package-lock.json > artifacts/dependency-contract.sha256
+
+      - name: Frozen install
+        run: npm ci --no-audit --no-fund
+
+      - name: Run read-only audit tests
+        run: npm run test:audit
+
+      - name: Record safety receipt
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const crypto = require('node:crypto');
+          const hash = (path) => fs.existsSync(path)
+            ? crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex')
+            : null;
+          const receipt = {
+            schemaVersion: 'agent-runtime.read-only-audit-ci.v0.1',
+            commit: process.env.GITHUB_SHA,
+            generatedAt: new Date().toISOString(),
+            runtimeMode: 'read_only',
+            mutationCapabilitiesEnabled: [],
+            packageJsonSha256: hash('package.json'),
+            packageLockSha256: hash('package-lock.json'),
+            testFileSha256: hash('tests/audit/repository-audit.test.ts'),
+          };
+          fs.writeFileSync('artifacts/read-only-audit-receipt.json', JSON.stringify(receipt, null, 2) + '\n');
+          NODE
+
+      - name: Upload safety evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: read-only-audit-evidence
+          path: artifacts/**
+          if-no-files-found: error
+          retention-days: 30

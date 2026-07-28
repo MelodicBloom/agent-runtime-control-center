@@ -1,5 +1,13 @@
 import type { ApprovalRule, Capability, PolicyDecision, RiskLevel } from "./types";
 
+export type RuntimeMode = "read_only" | "approval_gated";
+
+/**
+ * The runtime remains read-only until a separately reviewed promotion changes
+ * the caller's mode. Approval records alone cannot bypass this default.
+ */
+export const DEFAULT_RUNTIME_MODE: RuntimeMode = "read_only";
+
 const riskByCapability: Record<Capability, RiskLevel> = {
   read: "low",
   plan: "low",
@@ -22,7 +30,19 @@ const approvalByCapability: Record<Capability, ApprovalRule> = {
   delete: "blocked",
 };
 
-export function decidePolicy(capability: Capability): PolicyDecision {
+export function decidePolicy(
+  capability: Capability,
+  runtimeMode: RuntimeMode = DEFAULT_RUNTIME_MODE,
+): PolicyDecision {
+  if (runtimeMode === "read_only" && capability !== "read" && capability !== "plan") {
+    return {
+      allowed: false,
+      riskLevel: "blocked",
+      approvalRule: "blocked",
+      reason: `Capability ${capability} is disabled while the runtime is locked to read-only mode.`,
+    };
+  }
+
   const riskLevel = riskByCapability[capability];
   const approvalRule = approvalByCapability[capability];
   const blocked = approvalRule === "blocked" || riskLevel === "blocked";
