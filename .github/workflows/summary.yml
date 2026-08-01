@@ -15,15 +15,21 @@ jobs:
 
     steps:
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        id: node
+        continue-on-error: true
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
+          package-manager-cache: false
 
       - name: Install GitHub Copilot CLI
-        run: npm install --global @github/copilot
+        id: install
+        continue-on-error: true
+        run: npm install --global --no-audit --no-fund @github/copilot
 
       - name: Generate Copilot summary
         id: copilot
+        if: steps.install.outcome == 'success'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -89,7 +95,7 @@ jobs:
 
       - name: Build deterministic fallback summary
         id: fallback
-        if: steps.copilot.outcome != 'success'
+        if: always() && (steps.install.outcome != 'success' || steps.copilot.outcome != 'success')
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -125,18 +131,30 @@ jobs:
           NODE
 
       - name: Select summary response
+        if: always()
         env:
           COPILOT_OUTCOME: ${{ steps.copilot.outcome }}
           COPILOT_RESPONSE: ${{ steps.copilot.outputs.response }}
           FALLBACK_RESPONSE: ${{ steps.fallback.outputs.response }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
-          if [[ "$COPILOT_OUTCOME" == "success" && -n "$COPILOT_RESPONSE" ]]; then
-            printf '%s\n' "$COPILOT_RESPONSE" > /tmp/issue-summary.md
-          else
-            printf '%s\n' "$FALLBACK_RESPONSE" > /tmp/issue-summary.md
-          fi
+          node <<'NODE'
+          const { writeFileSync } = require('node:fs');
+
+          const copilotSucceeded = process.env.COPILOT_OUTCOME === 'success';
+          const copilot = (process.env.COPILOT_RESPONSE || '').trim();
+          const fallback = (process.env.FALLBACK_RESPONSE || '').trim();
+          const title = (process.env.ISSUE_TITLE || 'Untitled issue').trim();
+
+          const response = copilotSucceeded && copilot
+            ? copilot
+            : fallback || `**Automated summary:** ${title}. Summary generation encountered an unexpected bootstrap failure; review the issue body directly.`;
+
+          writeFileSync('/tmp/issue-summary.md', `${response}\n`, 'utf8');
+          NODE
 
       - name: Comment with issue summary
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
