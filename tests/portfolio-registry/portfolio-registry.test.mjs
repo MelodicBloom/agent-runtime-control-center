@@ -14,6 +14,10 @@ const schemaUrl = new URL(
   "../../memory/portfolio-registry/asset.schema.json",
   import.meta.url,
 );
+const productionRecordUrl = new URL(
+  "../../memory/portfolio-registry/assets/contract-proof-v0.json",
+  import.meta.url,
+);
 const schema = JSON.parse(await readFile(schemaUrl, "utf8"));
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 const validate = ajv.compile(schema);
@@ -328,6 +332,28 @@ test("semantic validation enforces the expected production record count", async 
     },
     2,
   );
+});
+
+test("production record preserves the approved epistemic distinctions", async () => {
+  const record = JSON.parse(await readFile(productionRecordUrl, "utf8"));
+  const pdfSource = record.authority_sources.find(
+    (source) =>
+      source.source_id ===
+      "source.pdf.regenerative-intelligence-architecture",
+  );
+
+  assert.equal(record.owner.value, "Jennipher");
+  assert.equal(record.owner.epistemic_state, "declared");
+  assert.equal(record.canonical_location.epistemic_state, "verified");
+  assert.equal(record.current_git_ref.epistemic_state, "verified");
+  assert.equal(pdfSource.epistemic_state, "declared");
+  assert.equal(pdfSource.integrity.verification_state, "verified");
+  assert.equal(record.project_class.epistemic_state, "unknown");
+  assert.equal(record.disposition.epistemic_state, "unknown");
+  assert.equal(record.review_date.epistemic_state, "unknown");
+  assert.equal(record.next_gate.responsible_role, "cross_project_auditor");
+  assert.equal(record.next_gate.routing.value, "Kimi");
+  assert.equal(record.next_gate.routing.epistemic_state, "declared");
 });
 
 test("renderer emits the governed fields in a fixed human-readable order", () => {
