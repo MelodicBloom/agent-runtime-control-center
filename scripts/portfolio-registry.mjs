@@ -1,5 +1,5 @@
-import { readdir, readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 
@@ -270,6 +270,143 @@ async function validateRegistry({
   };
 }
 
+function markdownCell(value) {
+  return String(value).replaceAll("|", "\\|").replaceAll("\n", " ");
+}
+
+function factDisplay(fact) {
+  const value = fact.value === null ? fact.epistemic_state : fact.value;
+  return `${value} (\`${fact.epistemic_state}\`)`;
+}
+
+function renderPortfolio(records) {
+  const lines = [
+    "# Portfolio Asset Registry — Contract Proof v0",
+    "",
+    "Generated from governed JSON records. Do not edit directly.",
+    "",
+  ];
+  const maturityOrder = [
+    "artifact_completeness",
+    "engineering_reliability",
+    "operational_readiness",
+    "documentation",
+    "use_evidence",
+  ];
+  const orderedRecords = [...records].sort((left, right) =>
+    left.asset_id.localeCompare(right.asset_id),
+  );
+
+  for (const record of orderedRecords) {
+    const location =
+      record.canonical_location.kind === "repository"
+        ? record.canonical_location.repository
+        : "unrepoed";
+    const gitRef =
+      record.current_git_ref.state === "resolved"
+        ? `\`${record.current_git_ref.commit_sha}\` (\`${record.current_git_ref.epistemic_state}\`)`
+        : `${record.current_git_ref.state} (\`${record.current_git_ref.epistemic_state}\`)`;
+    const dependencies = record.dependencies.length
+      ? [...record.dependencies]
+          .sort((left, right) => left.localeCompare(right))
+          .map((dependency) => `\`${dependency}\``)
+          .join(", ")
+      : "none";
+    const blockers = record.blockers.length
+      ? [...record.blockers]
+          .sort((left, right) => left.blocker_id.localeCompare(right.blocker_id))
+          .map((blocker) => `${blocker.description} (\`${blocker.status}\`)`)
+          .join("; ")
+      : "none";
+
+    lines.push(
+      `## ${record.name}`,
+      "",
+      `- Asset ID: \`${record.asset_id}\``,
+      `- Canonical location: \`${location}\` (\`${record.canonical_location.epistemic_state}\`)`,
+      `- Owner: ${factDisplay(record.owner)}`,
+      `- Project class: ${factDisplay(record.project_class)}`,
+      `- Disposition: ${factDisplay(record.disposition)}`,
+      `- Current immutable Git ref: ${gitRef}`,
+      `- Dependencies: ${dependencies}`,
+      `- Blockers: ${blockers}`,
+      `- Review date: ${factDisplay(record.review_date)}`,
+      "",
+      "### Authority sources",
+      "",
+      "| Source | Type | Semantic authority | Semantic state | Integrity | SHA-256 | Bytes |",
+      "| --- | --- | --- | --- | --- | --- | ---: |",
+    );
+
+    for (const source of [...record.authority_sources].sort((left, right) =>
+      left.source_id.localeCompare(right.source_id),
+    )) {
+      lines.push(
+        `| \`${markdownCell(source.source_id)}\` | ${markdownCell(source.source_type)} | ${markdownCell(source.semantic_authority)} | \`${source.epistemic_state}\` | \`${source.integrity.verification_state}\` | ${source.integrity.sha256 ? `\`${source.integrity.sha256}\`` : "—"} | ${source.integrity.byte_size ?? "—"} |`,
+      );
+    }
+
+    lines.push(
+      "",
+      "### Maturity",
+      "",
+      "| Dimension | Assessment | Evidence verification |",
+      "| --- | --- | --- |",
+    );
+    for (const dimension of maturityOrder) {
+      const maturity = record.maturity[dimension];
+      lines.push(
+        `| \`${dimension}\` | ${factDisplay(maturity.assessment)} | \`${maturity.evidence.verification_state}\` |`,
+      );
+    }
+
+    lines.push(
+      "",
+      "### Next gate",
+      "",
+      `- Gate ID: \`${record.next_gate.gate_id}\``,
+      `- Description: ${record.next_gate.description}`,
+      `- Responsible role: \`${record.next_gate.responsible_role}\``,
+      `- Status: \`${record.next_gate.status}\``,
+      `- Current routing: ${factDisplay(record.next_gate.routing)}`,
+      "- Required evidence:",
+    );
+    for (const evidence of [...record.next_gate.required_evidence].sort((left, right) =>
+      left.evidence_id.localeCompare(right.evidence_id),
+    )) {
+      lines.push(`  - \`${evidence.evidence_id}\`: ${evidence.description}`);
+    }
+    lines.push("");
+  }
+
+  return `${lines.join("\n").replace(/\n+$/u, "")}\n`;
+}
+
+async function generatePortfolio({
+  registryDir = defaultRegistryDir,
+  schemaPath = defaultSchemaPath,
+  outputPath,
+  expectedRecordCount = 1,
+} = {}) {
+  if (!outputPath) throw new Error("Generation requires an output path.");
+  const validation = await validateRegistry({
+    registryDir,
+    schemaPath,
+    expectedRecordCount,
+  });
+  if (!validation.valid) {
+    const details = validation.errors
+      .map((item) => `${item.path} [${item.code}] ${item.message}`)
+      .join("\n");
+    throw new Error(`Registry validation failed before rendering:\n${details}`);
+  }
+
+  const bytes = renderPortfolio(validation.records);
+  await mkdir(dirname(resolve(outputPath)), { recursive: true });
+  await writeFile(resolve(outputPath), bytes, "utf8");
+  return { records: validation.records, bytes };
+}
+
 function parseValidateArguments(argumentsList) {
   const options = {};
   for (let index = 0; index < argumentsList.length; index += 1) {
@@ -291,10 +428,34 @@ function parseValidateArguments(argumentsList) {
   return options;
 }
 
+function parseGenerateArguments(argumentsList) {
+  const options = parseValidateArguments(
+    argumentsList.filter((argument, index) => {
+      if (argument === "--output") return false;
+      if (index > 0 && argumentsList[index - 1] === "--output") return false;
+      return true;
+    }),
+  );
+  const outputIndex = argumentsList.indexOf("--output");
+  if (outputIndex === -1 || !argumentsList[outputIndex + 1]) {
+    throw new Error("Generation requires --output PATH.");
+  }
+  options.outputPath = resolve(argumentsList[outputIndex + 1]);
+  return options;
+}
+
 async function runCli() {
   const [command, ...argumentsList] = process.argv.slice(2);
+  if (command === "generate") {
+    const generated = await generatePortfolio(parseGenerateArguments(argumentsList));
+    console.log("portfolio-registry generation: PASS");
+    console.log(`records: ${generated.records.length}`);
+    return;
+  }
   if (command !== "validate") {
-    throw new Error("Usage: node scripts/portfolio-registry.mjs validate [options]");
+    throw new Error(
+      "Usage: node scripts/portfolio-registry.mjs <validate|generate> [options]",
+    );
   }
 
   const result = await validateRegistry(parseValidateArguments(argumentsList));
@@ -319,4 +480,4 @@ if (isMain) {
   });
 }
 
-export { loadRegistry, validateRegistry };
+export { generatePortfolio, loadRegistry, renderPortfolio, validateRegistry };

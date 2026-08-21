@@ -4,7 +4,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
-import { validateRegistry } from "../../scripts/portfolio-registry.mjs";
+import {
+  renderPortfolio,
+  validateRegistry,
+} from "../../scripts/portfolio-registry.mjs";
+import { compareFreshReport } from "../../scripts/verify-portfolio-registry.mjs";
 
 const schemaUrl = new URL(
   "../../memory/portfolio-registry/asset.schema.json",
@@ -324,6 +328,59 @@ test("semantic validation enforces the expected production record count", async 
     },
     2,
   );
+});
+
+test("renderer emits the governed fields in a fixed human-readable order", () => {
+  const rendered = renderPortfolio([createValidRecord()]);
+  const expectedExcerpt = [
+    "## Portfolio Asset Registry - Contract Proof v0",
+    "",
+    "- Asset ID: `asset.contract-proof-v0`",
+    "- Canonical location: `MelodicBloom/agent-runtime-control-center` (`verified`)",
+    "- Owner: Jennipher (`declared`)",
+    "- Project class: unknown (`unknown`)",
+    "- Disposition: unknown (`unknown`)",
+    "- Current immutable Git ref: `8fa2886b2b001b82265bcefe54d9f9bbdc15bc66` (`verified`)",
+  ].join("\n");
+
+  assert.ok(rendered.includes(expectedExcerpt));
+  assert.ok(rendered.endsWith("\n"));
+  assert.equal(rendered.includes("\r"), false);
+});
+
+test("renderer output is byte-identical regardless of input traversal order", () => {
+  const alpha = createValidRecord();
+  const zeta = createValidRecord();
+  zeta.asset_id = "asset.zeta";
+  zeta.name = "Zeta Asset";
+
+  assert.equal(
+    renderPortfolio([zeta, alpha]),
+    renderPortfolio([alpha, zeta]),
+  );
+});
+
+test("renderer contains no current working directory or wall-clock marker", () => {
+  const rendered = renderPortfolio([createValidRecord()]);
+  assert.equal(rendered.includes(process.cwd()), false);
+  assert.equal(rendered.includes(new Date().getFullYear().toString()), false);
+  assert.equal(rendered.includes("Generated at"), false);
+});
+
+test("freshness comparison fails for a deliberately stale report", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "portfolio-report-test-"));
+  const freshPath = join(directory, "fresh.md");
+  const committedPath = join(directory, "committed.md");
+
+  try {
+    await writeFile(freshPath, "fresh bytes\n", "utf8");
+    await writeFile(committedPath, "stale bytes\n", "utf8");
+    const comparison = await compareFreshReport({ freshPath, committedPath });
+    assert.equal(comparison.fresh, false);
+    assert.notEqual(comparison.freshSha256, comparison.committedSha256);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 export { createValidRecord };
