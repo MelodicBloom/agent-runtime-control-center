@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
+import { validateRegistry } from "../../scripts/portfolio-registry.mjs";
 
 const schemaUrl = new URL(
   "../../memory/portfolio-registry/asset.schema.json",
@@ -201,6 +204,126 @@ test("maturity assessment is structurally separate from evidence verification", 
     epistemic_state: "unknown",
   };
   assert.equal(validate(record), false);
+});
+
+async function withTemporaryRegistry(records, callback, expectedRecordCount = records.length) {
+  const registryDir = await mkdtemp(join(tmpdir(), "portfolio-registry-test-"));
+  const assetsDir = join(registryDir, "assets");
+  await mkdir(assetsDir);
+
+  try {
+    for (const [index, record] of records.entries()) {
+      await writeFile(
+        join(assetsDir, `${String(index).padStart(2, "0")}.json`),
+        `${JSON.stringify(record, null, 2)}\n`,
+        "utf8",
+      );
+    }
+
+    return await callback(
+      await validateRegistry({ registryDir, expectedRecordCount }),
+    );
+  } finally {
+    await rm(registryDir, { recursive: true, force: true });
+  }
+}
+
+function hasError(result, code) {
+  return result.errors.some((error) => error.code === code);
+}
+
+test("semantic validation rejects duplicate asset IDs", async () => {
+  await withTemporaryRegistry(
+    [createValidRecord(), createValidRecord()],
+    (result) => {
+      assert.equal(result.valid, false);
+      assert.equal(hasError(result, "registry.duplicate_asset_id"), true);
+    },
+    2,
+  );
+});
+
+test("schema execution reports duplicate dependencies without handwritten shape rules", async () => {
+  const record = clonedRecord();
+  record.dependencies = ["asset.dependency", "asset.dependency"];
+
+  await withTemporaryRegistry([record], (result) => {
+    assert.equal(result.valid, false);
+    assert.equal(hasError(result, "schema.uniqueItems"), true);
+  });
+});
+
+test("semantic validation rejects a self-dependency", async () => {
+  const record = clonedRecord();
+  record.dependencies = [record.asset_id];
+
+  await withTemporaryRegistry([record], (result) => {
+    assert.equal(result.valid, false);
+    assert.equal(hasError(result, "registry.self_dependency"), true);
+  });
+});
+
+test("semantic validation rejects a dangling dependency", async () => {
+  const record = clonedRecord();
+  record.dependencies = ["asset.missing"];
+
+  await withTemporaryRegistry([record], (result) => {
+    assert.equal(result.valid, false);
+    assert.equal(hasError(result, "registry.dangling_dependency"), true);
+  });
+});
+
+test("semantic validation rejects missing authority-source references", async () => {
+  const record = clonedRecord();
+  record.owner.evidence_source_ids = ["source.missing"];
+
+  await withTemporaryRegistry([record], (result) => {
+    assert.equal(result.valid, false);
+    assert.equal(hasError(result, "record.missing_authority_source"), true);
+  });
+});
+
+test("semantic validation rejects an unrepoed asset carrying a Git commit", async () => {
+  const record = clonedRecord();
+  record.canonical_location = {
+    kind: "unrepoed",
+    repository: null,
+    epistemic_state: "declared",
+    evidence_source_ids: ["source.handoff"],
+    reason: null,
+  };
+
+  await withTemporaryRegistry([record], (result) => {
+    assert.equal(result.valid, false);
+    assert.equal(hasError(result, "record.impossible_repository_ref"), true);
+  });
+});
+
+test("semantic validation rejects a repository with a not-applicable Git ref", async () => {
+  const record = clonedRecord();
+  record.current_git_ref = {
+    state: "not_applicable",
+    commit_sha: null,
+    epistemic_state: "not_applicable",
+    evidence_source_ids: [],
+    reason: "Synthetic impossible state.",
+  };
+
+  await withTemporaryRegistry([record], (result) => {
+    assert.equal(result.valid, false);
+    assert.equal(hasError(result, "record.impossible_repository_ref"), true);
+  });
+});
+
+test("semantic validation enforces the expected production record count", async () => {
+  await withTemporaryRegistry(
+    [createValidRecord()],
+    (result) => {
+      assert.equal(result.valid, false);
+      assert.equal(hasError(result, "registry.record_count"), true);
+    },
+    2,
+  );
 });
 
 export { createValidRecord };
