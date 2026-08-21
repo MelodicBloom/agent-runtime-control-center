@@ -8,6 +8,10 @@
     "lint": "next lint apps/web",
     "test:audit": "node --import tsx --test tests/audit/*.test.ts",
     "verify:audit": "npm run test:audit",
+    "validate:portfolio-registry": "node scripts/portfolio-registry.mjs validate --expected-count 1",
+    "generate:portfolio-registry": "node scripts/portfolio-registry.mjs generate --output docs/portfolio/CONTRACT_PROOF_V0.md",
+    "test:portfolio-registry": "node --test tests/portfolio-registry/portfolio-registry.test.mjs",
+    "verify:portfolio-registry": "node scripts/verify-portfolio-registry.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
