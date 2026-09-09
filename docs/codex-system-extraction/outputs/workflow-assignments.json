@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "assignment_mode": "logical_roles_only",
+  "roles": ["evidence_owner", "contract_owner", "implementation_owner", "design_owner", "qa_owner", "release_owner"],
+  "workflows": [
+    {"id":"extract_rules","feature":"Evidence-scoped operating rules","owner_role":"evidence_owner","inputs":["outputs/source-register.json"],"outputs":["outputs/codex-system.md"],"depends_on":[],"acceptance":"Every rule states or preserves its source scope; unknown conventions remain unknown"},
+    {"id":"define_contracts","feature":"Portable handoff contracts","owner_role":"contract_owner","inputs":["outputs/codex-system.md"],"outputs":["outputs/handoff.schema.json"],"depends_on":["extract_rules"],"acceptance":"Schema compiles and enforces kind-specific structure"},
+    {"id":"prepare_code_handoff","feature":"Code delivery fields","owner_role":"implementation_owner","inputs":["outputs/handoff.schema.json"],"outputs":["outputs/code-handoff.template.json"],"depends_on":["define_contracts"],"acceptance":"Template passes; incomplete completion claims fail"},
+    {"id":"prepare_design_handoff","feature":"Semantic tokens and rendering boundaries","owner_role":"design_owner","inputs":["outputs/handoff.schema.json"],"outputs":["outputs/design-handoff.template.json"],"depends_on":["define_contracts"],"acceptance":"Template passes; mixed code/design contracts and unsupported statuses fail"},
+    {"id":"validate_package","feature":"QA and bounded baseline comparison","owner_role":"qa_owner","inputs":["outputs/code-handoff.template.json","outputs/design-handoff.template.json","outputs/baseline-comparison.json"],"outputs":["outputs/test-results.tap","outputs/validation-receipt.json"],"depends_on":["prepare_code_handoff","prepare_design_handoff"],"acceptance":"All tests pass; receipt hashes match; benchmark limitations are explicit"},
+    {"id":"commit_package","feature":"Local reproducible handoff","owner_role":"release_owner","inputs":["outputs/validation-receipt.json"],"outputs":["git_commit"],"depends_on":["validate_package"],"acceptance":"Receipt verifies, staged diff passes whitespace checks, commit exists and working tree is clean"}
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:personal-codex:handoff:1.0.0",
+  "title": "Personal Codex handoff version 1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_id", "kind", "status", "objective", "owner_role", "scope", "source_revision", "evidence", "dependencies", "checks", "risks", "receipt_refs", "next_action"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "artifact_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["code", "design"]},
+    "status": {"enum": ["template", "proposed", "in_progress", "blocked", "complete"]},
+    "objective": {"type": "string", "minLength": 1},
+    "owner_role": {"type": "string", "minLength": 1},
+    "scope": {"$ref": "#/definitions/string_list"},
+    "source_revision": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"}]},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["claim", "evidence_status", "source_refs"],
+        "properties": {
+          "claim": {"type": "string", "minLength": 1},
+          "evidence_status": {"enum": ["observed", "reported", "inferred", "decided", "measured", "unknown"]},
+          "source_refs": {"$ref": "#/definitions/string_list"}
+        }
+      }
+    },
+    "dependencies": {"$ref": "#/definitions/string_list"},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["name", "result", "evidence_ref"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "result": {"enum": ["pass", "fail", "not_run", "not_applicable"]},
+          "evidence_ref": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+        }
+      }
+    },
+    "risks": {"$ref": "#/definitions/string_list"},
+    "receipt_refs": {"$ref": "#/definitions/string_list"},
+    "next_action": {"type": "string", "minLength": 1},
+    "implementation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["targets", "data_flow", "invariants", "rollback"],
+      "properties": {
+        "targets": {"$ref": "#/definitions/string_list"},
+        "data_flow": {"type": "string", "minLength": 1},
+        "invariants": {"$ref": "#/definitions/string_list"},
+        "rollback": {"type": "string", "minLength": 1}
+      }
+    },
+    "design": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tokens", "renderer_mappings", "accessibility", "motion_constraints"],
+      "properties": {
+        "tokens": {
+          "type": "array", "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["name", "semantic_type", "evidence_status", "value", "units"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "semantic_type": {"type": "string", "minLength": 1},
+              "evidence_status": {"enum": ["experimental", "declared", "calibrated", "unknown"]},
+              "value": {"anyOf": [{"type": "number"}, {"type": "string"}, {"type": "null"}]},
+              "units": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "renderer_mappings": {"$ref": "#/definitions/string_list"},
+        "accessibility": {"$ref": "#/definitions/string_list"},
+        "motion_constraints": {"$ref": "#/definitions/string_list"}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "code"}}}, "then": {"required": ["implementation"], "not": {"required": ["design"]}}},
+    {"if": {"properties": {"kind": {"const": "design"}}}, "then": {"required": ["design"], "not": {"required": ["implementation"]}}}
+  ],
+  "definitions": {"string_list": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}
+}

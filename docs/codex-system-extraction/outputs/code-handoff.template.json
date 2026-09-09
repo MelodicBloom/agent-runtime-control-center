@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_id": "code-handoff-template",
+  "kind": "code",
+  "status": "template",
+  "objective": "Replace with the observable behavior to implement",
+  "owner_role": "implementation_owner",
+  "scope": [],
+  "source_revision": null,
+  "evidence": [],
+  "dependencies": [],
+  "checks": [],
+  "risks": [],
+  "receipt_refs": [],
+  "next_action": "Populate the scope and source evidence before use",
+  "implementation": {
+    "targets": [],
+    "data_flow": "Specify producer, transformation, consumer and evidence path",
+    "invariants": [],
+    "rollback": "Specify the reversible recovery action"
+  }
+}

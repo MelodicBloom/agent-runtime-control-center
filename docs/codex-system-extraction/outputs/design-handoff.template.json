@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_id": "design-handoff-template",
+  "kind": "design",
+  "status": "template",
+  "objective": "Replace with the intended semantic and observable design outcome",
+  "owner_role": "design_owner",
+  "scope": [],
+  "source_revision": null,
+  "evidence": [],
+  "dependencies": [],
+  "checks": [],
+  "risks": [],
+  "receipt_refs": [],
+  "next_action": "Populate semantic tokens, evidence and accessibility behavior",
+  "design": {
+    "tokens": [],
+    "renderer_mappings": [],
+    "accessibility": [],
+    "motion_constraints": []
+  }
+}
