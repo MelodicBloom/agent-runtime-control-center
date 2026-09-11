@@ -74,9 +74,9 @@ function startNode(argumentsList) {
 }
 
 function testCounts(output) {
-  const tests = Number.parseInt(output.match(/ℹ tests (\d+)/u)?.[1] ?? "0", 10);
-  const passed = Number.parseInt(output.match(/ℹ pass (\d+)/u)?.[1] ?? "0", 10);
-  const failed = Number.parseInt(output.match(/ℹ fail (\d+)/u)?.[1] ?? "0", 10);
+  const tests = Number.parseInt(output.match(/^# tests (\d+)/mu)?.[1] ?? "0", 10);
+  const passed = Number.parseInt(output.match(/^# pass (\d+)/mu)?.[1] ?? "0", 10);
+  const failed = Number.parseInt(output.match(/^# fail (\d+)/mu)?.[1] ?? "0", 10);
   if (tests === 0 || tests !== passed + failed) {
     throw new Error("Unable to establish exact test counts from the Node test runner.");
   }
