@@ -186,7 +186,7 @@ async function validateRegistry({
     const schema = JSON.parse(await readFile(schemaPath, "utf8"));
     validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
   } catch (caught) {
-    errors.push(error("asset.schema.json", "schema.unreadable", caught.message));
+    errors.push(error(schemaPath, "schema.unreadable", caught.message));
   }
 
   const structurallyValid = [];
