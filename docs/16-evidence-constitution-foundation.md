@@ -52,6 +52,8 @@ An agent stops and records a hold when a source is unidentified, an interpretati
 
 ### Phase 1 — typed records, no automatic enforcement
 
+Initial implementation is present on this branch. `packages/core/src/control-plane/evidence.ts` exports the proposed records, and `tests/audit/evidence-constitution.test.ts` exercises their positive and negative paths. The workflow remains planning-only and no database migration or runtime write path is enabled.
+
 - Add Zod contracts for `EvidenceRecord`, `DecisionRecord`, `ExecutionGate`, `VerificationReceipt`, and `PatternCandidate` under `packages/core/src/control-plane`.
 - Add fixture tests for immutable source preservation, absent-versus-unknown handling, approval escalation, source-to-receipt traceability, and failed negative controls.
 - Store proposed records as task artifacts; do not add database migrations until the shapes and review flow are proven.
