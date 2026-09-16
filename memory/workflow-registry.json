@@ -3,6 +3,7 @@
     {"name": "repo-audit", "risk": "low", "agent": "qa-agent", "mode": "diagnostic"},
     {"name": "build-fix", "risk": "medium", "agent": "build-agent", "mode": "implementation"},
     {"name": "daily-chief-brief", "risk": "low", "agent": "chief-of-staff", "mode": "regenerative"},
-    {"name": "gumroad-package", "risk": "medium", "agent": "narrative-agent", "mode": "narrative"}
+    {"name": "gumroad-package", "risk": "medium", "agent": "narrative-agent", "mode": "narrative"},
+    {"name": "evidence-reconciliation", "risk": "low", "agent": "qa-agent", "mode": "diagnostic", "status": "proposed_non_enforcing"}
   ]
 }

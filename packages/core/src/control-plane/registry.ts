@@ -158,4 +158,41 @@ export const workflows: WorkflowDefinition[] = [
       "Failure summary is phone-readable",
     ],
   },
+  {
+    id: "evidence.reconciliation.v0",
+    name: "Evidence reconciliation planning workflow",
+    trigger: "/reconcile-evidence owner/repo",
+    inputs: ["github_repo", "document"],
+    stages: [
+      {
+        id: "collect",
+        name: "Capture immutable source references and observed facts",
+        actionIds: ["github.repo.read_metadata", "github.file.read_readme"],
+        approvalGate: "none",
+        stopCondition: "Stop when the source revision, path, or digest cannot be established.",
+      },
+      {
+        id: "decide",
+        name: "Record alternatives, falsifier, and bounded execution gate",
+        actionIds: ["plan.build", "plan.qa"],
+        approvalGate: "none",
+        stopCondition: "Stop if evidence and inference cannot be separated.",
+      },
+      {
+        id: "verify",
+        name: "Prepare verification and negative-control plan",
+        actionIds: ["plan.qa"],
+        approvalGate: "none",
+        stopCondition: "Do not promote a result without a declared negative control.",
+      },
+    ],
+    artifactsProduced: ["evidence_record", "decision_record", "execution_gate", "verification_plan"],
+    definitionOfDone: [
+      "Source revision, path, and SHA-256 are recorded",
+      "Facts, inferences, and unknowns are distinct",
+      "At least two alternatives and a falsifier are recorded",
+      "Any execution gate has bounded paths, validation, rollback, and approval rule",
+      "No repository mutation occurs in this v0 planning workflow",
+    ],
+  },
 ];
