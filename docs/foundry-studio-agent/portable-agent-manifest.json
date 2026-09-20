@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "manifest_version": "0.1.0",
+  "name": "melodicbloom-foundry-studio-agent",
+  "display_name": "MelodicBloom Foundry Studio Agent",
+  "status": "staged",
+  "note": "Portable project manifest. This is not asserted to be a native Microsoft Foundry import schema.",
+  "runtime_home": "MelodicBloom/agent-runtime-control-center",
+  "organization_control_plane": "MelodicBloom/.github",
+  "authority": {
+    "default": "read_propose",
+    "branch_write": false,
+    "merge": false,
+    "deploy": false,
+    "secrets": false,
+    "database_migration": false,
+    "cross_repo_write": false
+  },
+  "depth_modes": {
+    "FAST": {
+      "max_repo_families": 1,
+      "lenses": 1,
+      "external_research": false
+    },
+    "STANDARD": {
+      "max_repo_families": 4,
+      "lenses": 3,
+      "external_research": "when_required"
+    },
+    "DEEP": {
+      "max_repo_families": 12,
+      "lenses": 3,
+      "external_research": true,
+      "requires_explicit_budget": true
+    }
+  },
+  "cognitive_lenses": [
+    "SYSTEMS_ARCHITECT",
+    "HERETIC",
+    "FORGE"
+  ],
+  "domain_roles": [
+    "LOOMKEEPER",
+    "VISUAL_STUDIO",
+    "PRISM_FORGE"
+  ],
+  "commands": [
+    "/auto",
+    "/architect",
+    "/heretic",
+    "/forge",
+    "/observe",
+    "/ingest",
+    "/stage",
+    "/promote",
+    "/build",
+    "/research",
+    "/niche",
+    "/style",
+    "/shader",
+    "/experiment"
+  ],
+  "edge_status": [
+    "IMPLEMENTED",
+    "CONTRACTED",
+    "ACTIVE_BUILD",
+    "PLANNED",
+    "INFERRED",
+    "CONVERSATIONAL",
+    "UNRESOLVED"
+  ],
+  "core_repositories": [
+    "MelodicBloom/agent-runtime-control-center",
+    "MelodicBloom/.github",
+    "qt314wink/seed-loom",
+    "qt314wink/svg-filter-lab",
+    "MelodicBloom/svg-filter-lab",
+    "MelodicBloom/shader-gallery",
+    "MelodicBloom/nacre-inquiry-engine",
+    "MelodicBloom/nacre-orchid-atelier",
+    "MelodicBloom/nacre-orchid",
+    "MelodicBloom/Design-Fusion-Studio",
+    "MelodicBloom/melodyfire",
+    "qt314wink/motion",
+    "qt314wink/observation-ad-pipeline",
+    "MelodicBloom/wan-artistic-pipeline",
+    "qt314wink/prism-loom",
+    "qt314wink/omni-loom",
+    "MelodicBloom/project-constellation",
+    "MelodicBloom/flore-orthography-memphis-ui"
+  ],
+  "unresolved_mappings": [
+    {
+      "label": "Motion Oracle",
+      "candidate": "qt314wink/motion",
+      "status": "UNRESOLVED"
+    },
+    {
+      "label": "Design Language Compiler",
+      "candidate": "MelodicBloom/Design-Fusion-Studio",
+      "status": "UNRESOLVED"
+    },
+    {
+      "label": "svg-filter-lab canonical ownership",
+      "candidates": [
+        "qt314wink/svg-filter-lab",
+        "MelodicBloom/svg-filter-lab"
+      ],
+      "status": "UNRESOLVED"
+    }
+  ],
+  "foundry": {
+    "project_endpoint_env": "FOUNDRY_PROJECT_ENDPOINT",
+    "agent_name_env": "FOUNDRY_AGENT_NAME",
+    "model_deployment_env": "FOUNDRY_MODEL_DEPLOYMENT_NAME",
+    "authentication": "DefaultAzureCredential",
+    "sdk": "azure-ai-projects>=2.3.0"
+  },
+  "direct_openai_optional": {
+    "api_key_env": "OPENAI_API_KEY",
+    "base_url_env": "OPENAI_BASE_URL",
+    "model_env": "OPENAI_MODEL",
+    "default_base_url": "https://api.openai.com/v1"
+  }
+}
