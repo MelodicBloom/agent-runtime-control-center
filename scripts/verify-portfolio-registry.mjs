@@ -84,7 +84,7 @@ function testCounts(output) {
 }
 
 async function runCombinedVerification() {
-  const testRun = startNode(["--test", testPath]);
+  const testRun = startNode(["--test", "--test-reporter=tap", testPath]);
   const testResult = await testRun.completion;
   const counts = testCounts(`${testResult.stdout}${testResult.stderr}`);
   if (counts.failed !== 0) throw new Error("Portfolio registry tests failed.");
