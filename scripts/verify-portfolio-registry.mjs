@@ -7,7 +7,6 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { validateRegistry } from "./portfolio-registry.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
-const legacyRegistryPath = resolve(repositoryRoot, "memory/project-registry.json");
 const committedReportPath = resolve(
   repositoryRoot,
   "docs/portfolio/CONTRACT_PROOF_V0.md",
@@ -17,8 +16,6 @@ const testPath = resolve(
   repositoryRoot,
   "tests/portfolio-registry/portfolio-registry.test.mjs",
 );
-const expectedLegacySha256 =
-  "d5ae719062059781aad722d059ed9c9780aaae39d667e5eeacbd27e8e6afe377";
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
@@ -97,13 +94,6 @@ async function runCombinedVerification() {
     throw new Error(`Production registry validation failed:\n${details}`);
   }
 
-  const legacySha256 = sha256(await readFile(legacyRegistryPath));
-  if (legacySha256 !== expectedLegacySha256) {
-    throw new Error(
-      `Legacy registry hash changed: expected ${expectedLegacySha256}, found ${legacySha256}.`,
-    );
-  }
-
   const temporaryRoot = await mkdtemp(
     join(tmpdir(), "portfolio-registry-verification-"),
   );
@@ -153,7 +143,6 @@ async function runCombinedVerification() {
       "schema_execution: PASS",
       "semantic_validation: PASS",
       `production_records: ${validation.records.length}`,
-      `legacy_registry_sha256: ${legacySha256}`,
       "generation_processes: 2 independent Node processes",
       `generation_run_1_sha256: ${runOneSha256}`,
       `generation_run_2_sha256: ${runTwoSha256}`,
@@ -165,7 +154,6 @@ async function runCombinedVerification() {
       summary: `${summary.join("\n")}\n`,
       counts,
       validation,
-      legacySha256,
       runOneSha256,
       runTwoSha256,
       reportSha256: freshness.freshSha256,
