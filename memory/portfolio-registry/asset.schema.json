@@ -1,0 +1,566 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://melodicbloom.local/schemas/portfolio-asset-v0.json",
+  "title": "Portfolio Asset Registry v0 record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "asset_id",
+    "name",
+    "canonical_location",
+    "owner",
+    "project_class",
+    "authority_sources",
+    "disposition",
+    "maturity",
+    "dependencies",
+    "current_git_ref",
+    "next_gate",
+    "blockers",
+    "review_date"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "asset_id": { "$ref": "#/$defs/assetId" },
+    "name": { "$ref": "#/$defs/nonEmptyString" },
+    "canonical_location": { "$ref": "#/$defs/canonicalLocation" },
+    "owner": { "$ref": "#/$defs/fact" },
+    "project_class": { "$ref": "#/$defs/fact" },
+    "authority_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/authoritySource" }
+    },
+    "disposition": { "$ref": "#/$defs/dispositionFact" },
+    "maturity": { "$ref": "#/$defs/maturity" },
+    "dependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/assetId" }
+    },
+    "current_git_ref": { "$ref": "#/$defs/currentGitRef" },
+    "next_gate": { "$ref": "#/$defs/nextGate" },
+    "blockers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/blocker" }
+    },
+    "review_date": { "$ref": "#/$defs/dateFact" }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assetId": {
+      "type": "string",
+      "pattern": "^asset\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^source\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+    },
+    "epistemicState": {
+      "enum": [
+        "verified",
+        "declared",
+        "unverified",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "sourceIdList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/sourceId" }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "epistemic_state",
+        "evidence_source_ids",
+        "reason"
+      ],
+      "properties": {
+        "value": {
+          "type": ["string", "null"]
+        },
+        "epistemic_state": { "$ref": "#/$defs/epistemicState" },
+        "evidence_source_ids": { "$ref": "#/$defs/sourceIdList" },
+        "reason": {
+          "type": ["string", "null"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "epistemic_state": {
+                "enum": ["verified", "declared"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": { "$ref": "#/$defs/nonEmptyString" },
+              "evidence_source_ids": { "type": "array", "minItems": 1 },
+              "reason": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "epistemic_state": { "const": "unverified" }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "epistemic_state": { "const": "unknown" }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": { "const": null },
+              "evidence_source_ids": { "type": "array", "maxItems": 0 },
+              "reason": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "epistemic_state": { "const": "not_applicable" }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": { "const": null },
+              "evidence_source_ids": { "type": "array", "maxItems": 0 },
+              "reason": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      ]
+    },
+    "dateFact": {
+      "allOf": [
+        { "$ref": "#/$defs/fact" },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$"
+                },
+                { "type": "null" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "dispositionFact": {
+      "allOf": [
+        { "$ref": "#/$defs/fact" },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "anchor",
+                "incubate",
+                "connect",
+                "merge",
+                "archive",
+                "retire",
+                null
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "canonicalLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "repository",
+        "epistemic_state",
+        "evidence_source_ids",
+        "reason"
+      ],
+      "properties": {
+        "kind": { "enum": ["repository", "unrepoed"] },
+        "repository": { "type": ["string", "null"] },
+        "epistemic_state": { "$ref": "#/$defs/epistemicState" },
+        "evidence_source_ids": { "$ref": "#/$defs/sourceIdList" },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "kind": { "const": "repository" } }
+          },
+          "then": {
+            "properties": {
+              "repository": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "unrepoed" } }
+          },
+          "then": {
+            "properties": { "repository": { "const": null } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "epistemic_state": {
+                "enum": ["verified", "declared"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence_source_ids": { "type": "array", "minItems": 1 },
+              "reason": { "const": null }
+            }
+          }
+        }
+      ]
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_state",
+        "sha256",
+        "byte_size",
+        "digest_scope",
+        "reason"
+      ],
+      "properties": {
+        "verification_state": { "$ref": "#/$defs/epistemicState" },
+        "sha256": { "type": ["string", "null"] },
+        "byte_size": { "type": ["integer", "null"], "minimum": 0 },
+        "digest_scope": { "enum": ["raw_bytes", null] },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "verification_state": { "const": "verified" } }
+          },
+          "then": {
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "byte_size": { "type": "integer", "minimum": 0 },
+              "digest_scope": { "const": "raw_bytes" },
+              "reason": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification_state": {
+                "enum": ["declared", "unverified", "unknown"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sha256": { "const": null },
+              "byte_size": { "const": null },
+              "digest_scope": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification_state": { "const": "not_applicable" }
+            }
+          },
+          "then": {
+            "properties": {
+              "sha256": { "const": null },
+              "byte_size": { "const": null },
+              "digest_scope": { "const": null },
+              "reason": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      ]
+    },
+    "authoritySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_type",
+        "title",
+        "semantic_authority",
+        "epistemic_state",
+        "integrity"
+      ],
+      "properties": {
+        "source_id": { "$ref": "#/$defs/sourceId" },
+        "source_type": {
+          "enum": ["file", "decision_record", "repository"]
+        },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "semantic_authority": {
+          "enum": [
+            "strategic_source",
+            "decision_authority",
+            "repository_evidence"
+          ]
+        },
+        "epistemic_state": { "$ref": "#/$defs/epistemicState" },
+        "integrity": { "$ref": "#/$defs/integrity" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "source_type": { "const": "file" } }
+          },
+          "then": {
+            "properties": {
+              "integrity": {
+                "type": "object",
+                "properties": {
+                  "verification_state": {
+                    "enum": [
+                      "verified",
+                      "declared",
+                      "unverified",
+                      "unknown"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "integrity": {
+                "type": "object",
+                "properties": {
+                  "verification_state": { "const": "not_applicable" }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "maturityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verification_state", "authority_source_ids", "reason"],
+      "properties": {
+        "verification_state": { "$ref": "#/$defs/epistemicState" },
+        "authority_source_ids": { "$ref": "#/$defs/sourceIdList" },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verification_state": {
+                "enum": ["verified", "declared"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "authority_source_ids": { "type": "array", "minItems": 1 },
+              "reason": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification_state": { "const": "not_applicable" }
+            }
+          },
+          "then": {
+            "properties": {
+              "authority_source_ids": { "type": "array", "maxItems": 0 },
+              "reason": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      ]
+    },
+    "maturityDimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assessment", "evidence"],
+      "properties": {
+        "assessment": { "$ref": "#/$defs/fact" },
+        "evidence": { "$ref": "#/$defs/maturityEvidence" }
+      }
+    },
+    "maturity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_completeness",
+        "engineering_reliability",
+        "operational_readiness",
+        "documentation",
+        "use_evidence"
+      ],
+      "properties": {
+        "artifact_completeness": { "$ref": "#/$defs/maturityDimension" },
+        "engineering_reliability": { "$ref": "#/$defs/maturityDimension" },
+        "operational_readiness": { "$ref": "#/$defs/maturityDimension" },
+        "documentation": { "$ref": "#/$defs/maturityDimension" },
+        "use_evidence": { "$ref": "#/$defs/maturityDimension" }
+      }
+    },
+    "currentGitRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "commit_sha",
+        "epistemic_state",
+        "evidence_source_ids",
+        "reason"
+      ],
+      "properties": {
+        "state": { "enum": ["resolved", "unresolved", "not_applicable"] },
+        "commit_sha": { "type": ["string", "null"] },
+        "epistemic_state": { "$ref": "#/$defs/epistemicState" },
+        "evidence_source_ids": { "$ref": "#/$defs/sourceIdList" },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "state": { "const": "resolved" } }
+          },
+          "then": {
+            "properties": {
+              "commit_sha": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "epistemic_state": { "const": "verified" },
+              "evidence_source_ids": { "type": "array", "minItems": 1 },
+              "reason": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "const": "unresolved" } }
+          },
+          "then": {
+            "properties": {
+              "commit_sha": { "const": null },
+              "epistemic_state": {
+                "enum": ["unverified", "unknown"]
+              },
+              "evidence_source_ids": { "type": "array", "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "const": "not_applicable" } }
+          },
+          "then": {
+            "properties": {
+              "commit_sha": { "const": null },
+              "epistemic_state": { "const": "not_applicable" },
+              "evidence_source_ids": { "type": "array", "maxItems": 0 },
+              "reason": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      ]
+    },
+    "requiredEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "description"],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "description": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "nextGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate_id",
+        "description",
+        "responsible_role",
+        "status",
+        "required_evidence",
+        "routing"
+      ],
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "description": { "$ref": "#/$defs/nonEmptyString" },
+        "responsible_role": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "status": { "enum": ["pending", "ready", "blocked", "complete"] },
+        "required_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/requiredEvidence" }
+        },
+        "routing": { "$ref": "#/$defs/fact" }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocker_id", "description", "status"],
+      "properties": {
+        "blocker_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "description": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["open", "resolved"] }
+      }
+    }
+  }
+}

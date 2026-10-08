@@ -1,0 +1,11 @@
+{
+  "scope": "Bounded inspection of local documents, memory records and two accessible historical chats; no exhaustive code census or fresh remote branch verification",
+  "sources": [
+    {"id":"S1","type":"historical_user_preferences","locator":"C:/Users/girlw/.codex/memories/MEMORY.md","lines":"28-29,93-106","limitation":"Memory-derived preferences; original study status is historical","rollout_ids":["01a07698-4421-7c62-95b4-734d5ae2a35d","01a0744f-7d87-7982-b242-50ef982386dd"]},
+    {"id":"S2","type":"historical_study_summary","locator":"C:/Users/girlw/.codex/memories/rollout_summaries/2026-09-06T01-22-41-JSMd-infinite_mantra_nvos_shader_preparation_blocked_on_architect.md","limitation":"Research and proposed architecture; no executed shader established"},
+    {"id":"S3","type":"draft_specification","locator":"C:/Users/girlw/Documents/Codex/2026-08-31/prior-conversation-with-codex-conversation-role/work/seed-loom-repo/docs/epistemic-engine/02-inquiry-protocol.md","limitation":"Proposed protocol; quantitative quality thresholds not globally adopted"},
+    {"id":"S4","type":"draft_specification","locator":"C:/Users/girlw/Documents/Codex/2026-08-29/how-to-use-adc-start-with/outputs/","documents":["03-cross-repo-reference-architecture.md","08-regenerative-recursive-system-design.md"],"limitation":"DRAFT, REFERENCE, approval_evidence NONE"},
+    {"id":"S5","type":"historical_chat","locator":"6a82c0a4-0bcc-83ea-b433-7ee963c211be","title":"Project Boundaries and Handoffs","limitation":"User messages plus assistant synthesis; cited historical SHA and test claims not independently reverified"},
+    {"id":"S6","type":"draft_specification","locator":"C:/Users/girlw/Documents/Codex/2026-08-31/prior-conversation-with-codex-conversation-role/work/seed-loom-repo/docs/04-material-genome-and-surface-physics-spec.md","limitation":"v0.1 draft; material numerical examples are not measured universal standards"}
+  ]
+}

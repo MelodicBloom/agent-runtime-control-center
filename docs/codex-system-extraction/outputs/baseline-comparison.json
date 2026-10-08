@@ -1,0 +1,12 @@
+{
+  "method": "Targeted editorial regression comparison against the preceding chat response; assertions inspect the revised artifact. This is not an independent quality score or runtime performance benchmark.",
+  "baseline": "Prior assistant response in this task, beginning '1. Core Frameworks & Methodologies'",
+  "cases": [
+    {"id":"question_count","baseline_finding":"10 questions despite requested 3-5","baseline_pass":false,"refinement":"Exactly five decision-relevant questions","rule":"five_questions"},
+    {"id":"naming_scope","baseline_finding":"Snake case and UUIDv7 promoted as global conventions without a frequency census","baseline_pass":false,"refinement":"Explicitly scope naming evidence and the absent 80% census","rule":"scoped_naming"},
+    {"id":"draft_authority","baseline_finding":"Draft regenerative and architecture rules presented without their approval boundary","baseline_pass":false,"refinement":"Identify DRAFT and approval_evidence NONE in source register","rule":"draft_boundary"},
+    {"id":"source_identity","baseline_finding":"Memory citation used an unrelated example rollout identifier","baseline_pass":false,"refinement":"Preserve the actual historical rollout IDs in the source register","rule":"correct_source_ids"},
+    {"id":"autonomous_motion","baseline_finding":"Single-input modality restriction implied autonomous motion should be avoided","baseline_pass":false,"refinement":"Distinguish input modality from autonomous time evolution","rule":"time_not_input"},
+    {"id":"template_compatibility","baseline_finding":"Templates had no executable schema compatibility evidence","baseline_pass":false,"refinement":"Both templates compile and validate under a shared versioned schema","rule":"schema_compatibility"}
+  ]
+}

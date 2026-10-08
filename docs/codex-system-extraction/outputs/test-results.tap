@@ -1,0 +1,244 @@
+TAP version 13
+# Subtest: code template validates without fabricated results
+ok 1 - code template validates without fabricated results
+  ---
+  duration_ms: 1.2176
+  type: 'test'
+  ...
+# Subtest: code completed fixture validates
+ok 2 - code completed fixture validates
+  ---
+  duration_ms: 0.4088
+  type: 'test'
+  ...
+# Subtest: code template cannot be relabeled complete
+ok 3 - code template cannot be relabeled complete
+  ---
+  duration_ms: 0.2569
+  type: 'test'
+  ...
+# Subtest: design template validates without fabricated results
+ok 4 - design template validates without fabricated results
+  ---
+  duration_ms: 0.2195
+  type: 'test'
+  ...
+# Subtest: design completed fixture validates
+ok 5 - design completed fixture validates
+  ---
+  duration_ms: 0.2914
+  type: 'test'
+  ...
+# Subtest: design template cannot be relabeled complete
+ok 6 - design template cannot be relabeled complete
+  ---
+  duration_ms: 0.2564
+  type: 'test'
+  ...
+# Subtest: rejects unknown field
+ok 7 - rejects unknown field
+  ---
+  duration_ms: 0.5449
+  type: 'test'
+  ...
+# Subtest: rejects nested unknown field
+ok 8 - rejects nested unknown field
+  ---
+  duration_ms: 0.3308
+  type: 'test'
+  ...
+# Subtest: rejects missing objective
+ok 9 - rejects missing objective
+  ---
+  duration_ms: 1.3354
+  type: 'test'
+  ...
+# Subtest: rejects unsupported schema version
+ok 10 - rejects unsupported schema version
+  ---
+  duration_ms: 0.6906
+  type: 'test'
+  ...
+# Subtest: rejects mutable revision
+ok 11 - rejects mutable revision
+  ---
+  duration_ms: 0.446
+  type: 'test'
+  ...
+# Subtest: rejects mixed handoff kinds
+ok 12 - rejects mixed handoff kinds
+  ---
+  duration_ms: 0.5996
+  type: 'test'
+  ...
+# Subtest: rejects missing implementation
+ok 13 - rejects missing implementation
+  ---
+  duration_ms: 0.3
+  type: 'test'
+  ...
+# Subtest: rejects missing receipt
+ok 14 - rejects missing receipt
+  ---
+  duration_ms: 0.2498
+  type: 'test'
+  ...
+# Subtest: rejects failed check
+ok 15 - rejects failed check
+  ---
+  duration_ms: 0.2215
+  type: 'test'
+  ...
+# Subtest: rejects unrun check
+ok 16 - rejects unrun check
+  ---
+  duration_ms: 0.187
+  type: 'test'
+  ...
+# Subtest: rejects check without evidence
+ok 17 - rejects check without evidence
+  ---
+  duration_ms: 0.1664
+  type: 'test'
+  ...
+# Subtest: rejects claim without source
+ok 18 - rejects claim without source
+  ---
+  duration_ms: 0.1721
+  type: 'test'
+  ...
+# Subtest: rejects unsupported token evidence status
+ok 19 - rejects unsupported token evidence status
+  ---
+  duration_ms: 0.2346
+  type: 'test'
+  ...
+# Subtest: requires accessibility for completed design
+ok 20 - requires accessibility for completed design
+  ---
+  duration_ms: 0.1689
+  type: 'test'
+  ...
+# Subtest: CLI accepts a valid template
+ok 21 - CLI accepts a valid template
+  ---
+  duration_ms: 1112.2644
+  type: 'test'
+  ...
+# Subtest: CLI rejects non-handoff input
+ok 22 - CLI rejects non-handoff input
+  ---
+  duration_ms: 1400.0632
+  type: 'test'
+  ...
+# Subtest: CLI reports missing file without success
+ok 23 - CLI reports missing file without success
+  ---
+  duration_ms: 1262.568
+  type: 'test'
+  ...
+# Subtest: workflow roles, dependencies and existing inputs resolve
+ok 24 - workflow roles, dependencies and existing inputs resolve
+  ---
+  duration_ms: 2.2709
+  type: 'test'
+  ...
+# Subtest: rejects workflow cycle
+ok 25 - rejects workflow cycle
+  ---
+  duration_ms: 1.2593
+  type: 'test'
+  ...
+# Subtest: rejects unknown workflow owner
+ok 26 - rejects unknown workflow owner
+  ---
+  duration_ms: 1.1661
+  type: 'test'
+  ...
+# Subtest: rejects unknown workflow dependency
+ok 27 - rejects unknown workflow dependency
+  ---
+  duration_ms: 2.231
+  type: 'test'
+  ...
+# Subtest: mapping template has exactly the five requested sections
+ok 28 - mapping template has exactly the five requested sections
+  ---
+  duration_ms: 0.926
+  type: 'test'
+  ...
+# Subtest: all six source IDs are unique and limitations explicit
+ok 29 - all six source IDs are unique and limitations explicit
+  ---
+  duration_ms: 0.6516
+  type: 'test'
+  ...
+# Subtest: targeted benchmark: question_count
+ok 30 - targeted benchmark: question_count
+  ---
+  duration_ms: 0.1158
+  type: 'test'
+  ...
+# Subtest: targeted benchmark: naming_scope
+ok 31 - targeted benchmark: naming_scope
+  ---
+  duration_ms: 0.043
+  type: 'test'
+  ...
+# Subtest: targeted benchmark: draft_authority
+ok 32 - targeted benchmark: draft_authority
+  ---
+  duration_ms: 0.0356
+  type: 'test'
+  ...
+# Subtest: targeted benchmark: source_identity
+ok 33 - targeted benchmark: source_identity
+  ---
+  duration_ms: 0.0794
+  type: 'test'
+  ...
+# Subtest: targeted benchmark: autonomous_motion
+ok 34 - targeted benchmark: autonomous_motion
+  ---
+  duration_ms: 0.0472
+  type: 'test'
+  ...
+# Subtest: targeted benchmark: template_compatibility
+ok 35 - targeted benchmark: template_compatibility
+  ---
+  duration_ms: 0.0532
+  type: 'test'
+  ...
+# Subtest: receipt verifier accepts matching manifest
+ok 36 - receipt verifier accepts matching manifest
+  ---
+  duration_ms: 0.2361
+  type: 'test'
+  ...
+# Subtest: receipt verifier rejects modified bytes
+ok 37 - receipt verifier rejects modified bytes
+  ---
+  duration_ms: 0.0748
+  type: 'test'
+  ...
+# Subtest: receipt verifier rejects missing files
+ok 38 - receipt verifier rejects missing files
+  ---
+  duration_ms: 0.0389
+  type: 'test'
+  ...
+# Subtest: receipt verifier rejects failed test evidence
+ok 39 - receipt verifier rejects failed test evidence
+  ---
+  duration_ms: 0.0387
+  type: 'test'
+  ...
+1..39
+# tests 39
+# suites 0
+# pass 39
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5356.295

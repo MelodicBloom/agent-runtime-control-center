@@ -1,0 +1,190 @@
+{
+  "schema_version": "0.1.0",
+  "asset_id": "asset.contract-proof-v0",
+  "name": "Portfolio Asset Registry - Contract Proof v0",
+  "canonical_location": {
+    "kind": "repository",
+    "repository": "MelodicBloom/agent-runtime-control-center",
+    "epistemic_state": "verified",
+    "evidence_source_ids": [
+      "source.repository"
+    ],
+    "reason": null
+  },
+  "owner": {
+    "value": "Jennipher",
+    "epistemic_state": "declared",
+    "evidence_source_ids": [
+      "source.handoff"
+    ],
+    "reason": null
+  },
+  "project_class": {
+    "value": null,
+    "epistemic_state": "unknown",
+    "evidence_source_ids": [],
+    "reason": null
+  },
+  "authority_sources": [
+    {
+      "source_id": "source.handoff",
+      "source_type": "decision_record",
+      "title": "Approved Portfolio Registry Contract Proof v0 handoff",
+      "semantic_authority": "decision_authority",
+      "epistemic_state": "declared",
+      "integrity": {
+        "verification_state": "not_applicable",
+        "sha256": null,
+        "byte_size": null,
+        "digest_scope": null,
+        "reason": "The chat handoff is not a file artifact in this registry."
+      }
+    },
+    {
+      "source_id": "source.pdf.regenerative-intelligence-architecture",
+      "source_type": "file",
+      "title": "Regenerative Intelligence Architecture.pdf",
+      "semantic_authority": "strategic_source",
+      "epistemic_state": "declared",
+      "integrity": {
+        "verification_state": "verified",
+        "sha256": "4def5b033058f8df2a8b04ae4f6199c016621cad41adbb21c1f483ce88a8f95e",
+        "byte_size": 22475433,
+        "digest_scope": "raw_bytes",
+        "reason": null
+      }
+    },
+    {
+      "source_id": "source.repository",
+      "source_type": "repository",
+      "title": "MelodicBloom/agent-runtime-control-center",
+      "semantic_authority": "repository_evidence",
+      "epistemic_state": "verified",
+      "integrity": {
+        "verification_state": "not_applicable",
+        "sha256": null,
+        "byte_size": null,
+        "digest_scope": null,
+        "reason": "Git identity is represented by current_git_ref."
+      }
+    }
+  ],
+  "disposition": {
+    "value": null,
+    "epistemic_state": "unknown",
+    "evidence_source_ids": [],
+    "reason": null
+  },
+  "maturity": {
+    "artifact_completeness": {
+      "assessment": {
+        "value": null,
+        "epistemic_state": "unknown",
+        "evidence_source_ids": [],
+        "reason": null
+      },
+      "evidence": {
+        "verification_state": "not_applicable",
+        "authority_source_ids": [],
+        "reason": "No maturity evidence is asserted in Contract Proof v0."
+      }
+    },
+    "engineering_reliability": {
+      "assessment": {
+        "value": null,
+        "epistemic_state": "unknown",
+        "evidence_source_ids": [],
+        "reason": null
+      },
+      "evidence": {
+        "verification_state": "not_applicable",
+        "authority_source_ids": [],
+        "reason": "No maturity evidence is asserted in Contract Proof v0."
+      }
+    },
+    "operational_readiness": {
+      "assessment": {
+        "value": null,
+        "epistemic_state": "unknown",
+        "evidence_source_ids": [],
+        "reason": null
+      },
+      "evidence": {
+        "verification_state": "not_applicable",
+        "authority_source_ids": [],
+        "reason": "No maturity evidence is asserted in Contract Proof v0."
+      }
+    },
+    "documentation": {
+      "assessment": {
+        "value": null,
+        "epistemic_state": "unknown",
+        "evidence_source_ids": [],
+        "reason": null
+      },
+      "evidence": {
+        "verification_state": "not_applicable",
+        "authority_source_ids": [],
+        "reason": "No maturity evidence is asserted in Contract Proof v0."
+      }
+    },
+    "use_evidence": {
+      "assessment": {
+        "value": null,
+        "epistemic_state": "unknown",
+        "evidence_source_ids": [],
+        "reason": null
+      },
+      "evidence": {
+        "verification_state": "not_applicable",
+        "authority_source_ids": [],
+        "reason": "No maturity evidence is asserted in Contract Proof v0."
+      }
+    }
+  },
+  "dependencies": [],
+  "current_git_ref": {
+    "state": "resolved",
+    "commit_sha": "8fa2886b2b001b82265bcefe54d9f9bbdc15bc66",
+    "epistemic_state": "verified",
+    "evidence_source_ids": [
+      "source.repository"
+    ],
+    "reason": null
+  },
+  "next_gate": {
+    "gate_id": "cross_project_audit",
+    "description": "Cross-project auditor reviews the contract proof evidence.",
+    "responsible_role": "cross_project_auditor",
+    "status": "pending",
+    "required_evidence": [
+      {
+        "evidence_id": "implementation_receipt",
+        "description": "Committed implementation verification receipt."
+      },
+      {
+        "evidence_id": "verification_results",
+        "description": "Passing combined local verification output."
+      },
+      {
+        "evidence_id": "generated_report",
+        "description": "Fresh deterministic portfolio report."
+      }
+    ],
+    "routing": {
+      "value": "Kimi",
+      "epistemic_state": "declared",
+      "evidence_source_ids": [
+        "source.handoff"
+      ],
+      "reason": null
+    }
+  },
+  "blockers": [],
+  "review_date": {
+    "value": null,
+    "epistemic_state": "unknown",
+    "evidence_source_ids": [],
+    "reason": null
+  }
+}

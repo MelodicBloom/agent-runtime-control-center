@@ -1,0 +1,180 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_id": "personal-codex-validation",
+  "status": "pass",
+  "validated_at": "2026-09-09T20:22:20.327Z",
+  "runtime": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "tests": {
+    "command": "node --test --test-reporter=tap tests/contracts.test.cjs",
+    "passed": 39,
+    "failed": 0,
+    "log": "outputs/test-results.tap"
+  },
+  "compatibility": {
+    "schema": "JSON Schema draft-07",
+    "contract_version": "1.0.0",
+    "validator": "Ajv 8.20.0",
+    "external_schemas": "not tested"
+  },
+  "dependencies": {
+    "lockfile": "pnpm-lock.yaml",
+    "audit": "outputs/dependency-audit.json",
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "comparison": [
+    {
+      "id": "question_count",
+      "baseline_pass": false,
+      "revised_pass": true
+    },
+    {
+      "id": "naming_scope",
+      "baseline_pass": false,
+      "revised_pass": true
+    },
+    {
+      "id": "draft_authority",
+      "baseline_pass": false,
+      "revised_pass": true
+    },
+    {
+      "id": "source_identity",
+      "baseline_pass": false,
+      "revised_pass": true
+    },
+    {
+      "id": "autonomous_motion",
+      "baseline_pass": false,
+      "revised_pass": true
+    },
+    {
+      "id": "template_compatibility",
+      "baseline_pass": false,
+      "revised_pass": true
+    }
+  ],
+  "benchmark_scope": "Six targeted regressions from the prior chat; not an independent quality score or rendering performance test",
+  "refinements": [
+    "Scoped draft architecture and naming claims",
+    "Reduced inquiry matrix to five questions",
+    "Corrected historical source identities",
+    "Separated autonomous time from input modality",
+    "Added validated handoff contracts",
+    "Fixed strict schema union syntax",
+    "Updated advisory-affected Ajv 8.17.1 to 8.20.0"
+  ],
+  "limitations": [
+    "No application, shader or production deployment is delivered",
+    "No exhaustive repository census or current remote state verification",
+    "Roles are declarative assignments; no external dispatch",
+    "Receipt hash checks establish file integrity, not the truth of external claims",
+    "This receipt excludes itself from its manifest; the Git commit records the receipt bytes"
+  ],
+  "manifest": [
+    {
+      "path": ".gitattributes",
+      "bytes": 19,
+      "sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 20,
+      "sha256": "020989fbbe73dd97a355b1227ff080caf44f3307cc690524b497a073cd9af22c"
+    },
+    {
+      "path": "outputs/QA-REVIEW.md",
+      "bytes": 3090,
+      "sha256": "8456a0fa9a9217980e66f73026b617363dde6f665b10e8f15bb7c9b1ced5c3b9"
+    },
+    {
+      "path": "outputs/README.md",
+      "bytes": 1829,
+      "sha256": "fb7cd5be5c543fb8283c86937b6379a1ff571262ef5f5c27352f315044d7f01e"
+    },
+    {
+      "path": "outputs/baseline-comparison.json",
+      "bytes": 1767,
+      "sha256": "a8c0e28068c64a5df0820a94f3e8d69e94121602bd20af2d8cff5dac56fcc13a"
+    },
+    {
+      "path": "outputs/code-handoff.template.json",
+      "bytes": 635,
+      "sha256": "430ef0c60121c3168559e49de82cb19f78f0707d9d66df145840d4ee6ca430d2"
+    },
+    {
+      "path": "outputs/codex-system.md",
+      "bytes": 6446,
+      "sha256": "f669b6aad4b6bf3467d009578de76881b30d06ea107af604e7ef70cb2ee11dda"
+    },
+    {
+      "path": "outputs/dependency-audit.json",
+      "bytes": 640,
+      "sha256": "5198d4d6719345cafac2dbfc72eb13832f877d1aec6b8c622c2977831ff0583c"
+    },
+    {
+      "path": "outputs/design-handoff.template.json",
+      "bytes": 572,
+      "sha256": "992131e50ada0e29c764abf054fd0d5791fc5c2d7913e338b2aa279df6a3b545"
+    },
+    {
+      "path": "outputs/handoff.schema.json",
+      "bytes": 3922,
+      "sha256": "a7f21defa609d01654d4342b4213b268396553efe7019dad4b76df91c1a7cac6"
+    },
+    {
+      "path": "outputs/source-register.json",
+      "bytes": 1933,
+      "sha256": "abe7326c741aadb057cc2c8cdfeffb72ba7c4f24e43bf9dec350320ebde7930d"
+    },
+    {
+      "path": "outputs/test-results.tap",
+      "bytes": 5593,
+      "sha256": "af7da8e6afe962570af954534942e8096c4e997cf192df8e7d313037a8bd74a1"
+    },
+    {
+      "path": "outputs/workflow-assignments.json",
+      "bytes": 2177,
+      "sha256": "77f5d788aab5592718d4c686478b6288f0afe23d030045f457ac58779db862e0"
+    },
+    {
+      "path": "package.json",
+      "bytes": 527,
+      "sha256": "ca0898f4f2f5376233ebfcd7541ff52abd3df3aa19fc3231db02204ec575c785"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 1263,
+      "sha256": "45fa4d4cfb1aecb56522e0baf803b4cfad8fc8412a5df7a27a8a12cd6cc2e172"
+    },
+    {
+      "path": "scripts/package-checks.cjs",
+      "bytes": 3802,
+      "sha256": "4c3725993ef941c1eef355898acbb3283d5b362ef0bb0dbf7154bb1f459685fe"
+    },
+    {
+      "path": "scripts/validate-handoff.cjs",
+      "bytes": 2157,
+      "sha256": "ae1b2c02bf9ff3309ebb10495d9c2d65e141eda3a672a6cc9c664a6ac876e62c"
+    },
+    {
+      "path": "scripts/verify.cjs",
+      "bytes": 3409,
+      "sha256": "a90bee6d3433d316e795f0ee0b5ea896bba6851a4cadde9917aba2b10d1dc570"
+    },
+    {
+      "path": "tests/contracts.test.cjs",
+      "bytes": 5348,
+      "sha256": "b935d5a056e81086c2aa924c7cbfc7aed7f04e5f1fbd17b89ce116698507c479"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "personal-codex-extraction",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Evidence-scoped personal operating rules and validated handoff contracts",
+  "scripts": {
+    "test": "node --test tests/contracts.test.cjs",
+    "validate": "node scripts/verify.cjs",
+    "verify:receipt": "node scripts/verify.cjs --check-receipt",
+    "validate:handoff": "node scripts/validate-handoff.cjs"
+  },
+  "engines": { "node": ">=22" },
+  "packageManager": "pnpm@11.19.0",
+  "devDependencies": { "ajv": "8.20.0" }
+}
