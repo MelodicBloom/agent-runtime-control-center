@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="${1:-$PWD}"
 REF_DIR="${REF_DIR:-$ROOT/.reference-repos}"
 REF_MODE="${REF_MODE:-minimal}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 need() { command -v "$1" >/dev/null 2>&1 || { echo "Missing required command: $1" >&2; exit 1; }; }
 
@@ -39,25 +40,13 @@ fi
 
 mkdir -p "$REF_DIR"
 
-clone_ref() {
-  local repo="$1"
-  local name="${repo##*/}"
-  local dest="$REF_DIR/$name"
-  if [ -e "$dest/.git" ]; then
-    echo "==> Reference already present: $repo"
-    return 0
-  fi
-  echo "==> Cloning reference: $repo"
-  git clone --filter=blob:none --depth 1 "https://github.com/$repo.git" "$dest" || {
-    echo "WARN: clone failed for $repo (private repo or auth required)." >&2
-    echo "      If GitHub CLI is authenticated: gh repo clone $repo $dest -- --filter=blob:none --depth 1" >&2
-  }
-}
+# shellcheck source=foundry-reference-repos.sh
+source "$SCRIPT_DIR/foundry-reference-repos.sh"
 
 CORE_REPOS=(
   "MelodicBloom/agent-runtime-control-center"
   "MelodicBloom/.github"
-  "qt314wink/seed-loom"
+  "MelodicBloom/seed-loom"
   "qt314wink/svg-filter-lab"
   "MelodicBloom/svg-filter-lab"
   "MelodicBloom/shader-gallery"
